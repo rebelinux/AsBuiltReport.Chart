@@ -40,7 +40,7 @@ jobs:
                   dotnet-version: "8.0.x"
             - name: Restore dependencies
               run: dotnet restore ./Sources/AsBuiltReportChart.csproj
-              if: matrix.shell == 'powershell'
+              if: matrix.shell == 'pwsh'
             - name: Restore dependencies net48
               run: dotnet restore ./Sources/AsBuiltReportChart48.csproj
               if: matrix.shell == 'powershell'
@@ -75,7 +75,11 @@ jobs:
               run: Copy-Item -Path ./Sources/bin/Release/netstandard2.0/win-x64/publish/* -Destination ./AsBuiltReport.Chart/Src/Assemblies/Desktop/windows-x64 -Recurse
               if: matrix.os == 'windows-latest' && matrix.shell == 'powershell'
             - name: Run tests
-              run: dotnet test --no-build --verbosity normal ./Sources
+              run: dotnet test --no-build --verbosity normal ./Sources/AsBuiltReportChart.csproj
+              if: matrix.shell == 'pwsh'
+            - name: Run tests net48
+              run: dotnet test --no-build --verbosity normal ./Sources/AsBuiltReportChart48.csproj
+              if: matrix.shell == 'powershell'
 
             - name: Set up PowerShell Gallery
               run: |
