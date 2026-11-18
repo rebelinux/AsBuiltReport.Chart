@@ -68,7 +68,7 @@ jobs:
               run: dotnet publish ./Sources -c Release -r win-x64 --framework net48
               if: matrix.os == 'windows-latest' && matrix.shell == 'powershell'
             - name: Copy the library for Windows PowerShell
-              run: Copy-Item -Path ./Sources/bin/Release/netstandard2.0/win-x64/publish/* -Destination ./AsBuiltReport.Chart/Src/Assemblies/Desktop/windows-x64 -Recurse
+              run: Copy-Item -Path ./Sources/bin/Release/net48/win-x64/publish/* -Destination ./AsBuiltReport.Chart/Src/Assemblies/Desktop/windows-x64 -Recurse
               if: matrix.os == 'windows-latest' && matrix.shell == 'powershell'
             - name: Run tests
               run: dotnet test --no-build --verbosity normal ./Sources
