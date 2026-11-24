@@ -14,36 +14,41 @@ jobs:
               with:
                   dotnet-version: "8.0.x"
             - name: Restore dependencies
-              run: dotnet restore ./Sources
+              run: dotnet restore ./Sources/AsBuiltReportChart.csproj
             - name: Build the library for MacOS X64
-              run: dotnet publish ./Sources -c Release -r osx-x64
+              run: dotnet publish ./Sources/AsBuiltReportChart.csproj -c Release -r osx-x64
             - name: Copy the library for MacOS X64
               run: copy ./Sources/bin/Release/netstandard2.0/osx-x64/publish/*.*
                   ./AsBuiltReport.Chart/Src/Assemblies/Core/mac-osx/osx-x64
             - name: Build the library for MacOS Arm64
-              run: dotnet publish ./Sources -c Release -r osx-arm64
+              run: dotnet publish ./Sources/AsBuiltReportChart.csproj -c Release -r osx-arm64
             - name: Copy the library for MacOS Arm64
               run:
                   copy ./Sources/bin/Release/netstandard2.0/osx-arm64/publish/*.*
                   ./AsBuiltReport.Chart/Src/Assemblies/Core/mac-osx/osx-arm64
             - name: Build the library for Linux
-              run: dotnet publish ./Sources -c Release -r linux-x64
+              run: dotnet publish ./Sources/AsBuiltReportChart.csproj -c Release -r linux-x64
             - name: Copy the library for Linux
               run:
                   copy ./Sources/bin/Release/netstandard2.0/linux-x64/publish/*.*
                   ./AsBuiltReport.Chart/Src/Assemblies/Core/linux-x64
             - name: Build the library for Windows
-              run: dotnet publish ./Sources -c Release -r win-x64
+              run: dotnet publish ./Sources/AsBuiltReportChart.csproj -c Release -r win-x64
             - name: Copy the library for Windows
               run: copy ./Sources/bin/Release/netstandard2.0/win-x64/publish/*.*
                   ./AsBuiltReport.Chart/Src/Assemblies/Core/windows-x64
+
+            - name: Restore dependencies Net 48 Framework
+              run: dotnet restore ./Sources/AsBuiltReportChart48.csproj
+
             - name: Build the library for Windows PowerShell
-              run: dotnet publish ./Sources -c Release -r win-x64
+              run: dotnet publish ./Sources/AsBuiltReportChart48.csproj -c Release -r win-x64
             - name: Copy the library for Windows PowerShell
-              run: copy ./Sources/bin/Release/netstandard2.0/win-x64/publish/*.*
+              run: copy ./Sources/bin/Release/net48/win-x64/publish/*.*
                   ./AsBuiltReport.Chart/Src/Assemblies/Desktop/windows-x64
+
             - name: Run tests
-              run: dotnet test --no-build --verbosity normal ./Sources
+              run: dotnet test --no-build --verbosity normal ./Sources/AsBuiltReportChart.csproj
             - name: Set PSRepository to Trusted for PowerShell Gallery
               shell: pwsh
               run: |
