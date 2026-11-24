@@ -4,6 +4,7 @@
     <TargetFramework>net48</TargetFramework>
     <!-- <OutputType>Exe</OutputType> -->
     <Version>0.3.6</Version>
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
 
   <ItemGroup>

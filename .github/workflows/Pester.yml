@@ -43,6 +43,8 @@ jobs:
                   dotnet-version: "10.0.x"
             - name: Restore dependencies
               run: dotnet restore ./Sources/AsBuiltReportChart.csproj
+              if: matrix.shell == 'pwsh'
+
             - name: Build the library for MacOS ARM64
               run: dotnet publish ./Sources/AsBuiltReportChart.csproj -c Release -r osx-arm64
               if: matrix.os == 'macos-latest'
