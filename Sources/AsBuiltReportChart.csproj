@@ -1,14 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0;net48</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net48</TargetFrameworks>
     <!-- <OutputType>Exe</OutputType> -->
     <Version>0.3.6</Version>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+  <ItemGroup>
     <PackageReference Include="PowerShellStandard.Library" Version="5.1.1" />
     <PackageReference Include="ScottPlot" Version="5.1.59" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="HarfBuzzSharp.NativeAssets.Linux" Version="14.4.0.200" />
     <PackageReference Include="SkiaSharp" Version="4.157.0" />
     <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="4.157.0" />
@@ -18,8 +21,6 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
-    <PackageReference Include="PowerShellStandard.Library" Version="5.1.1" />
-    <PackageReference Include="ScottPlot" Version="5.1.59" />
     <PackageReference Include="HarfBuzzSharp.NativeAssets.Linux" Version="8.3.1.5" />
     <PackageReference Include="SkiaSharp" Version="3.119.4" />
     <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="3.119.4" />
