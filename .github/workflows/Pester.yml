@@ -78,7 +78,7 @@ jobs:
               run: dotnet restore ./Sources/AsBuiltReportChart48.csproj
               if: matrix.os == 'windows-latest' && matrix.shell == 'powershell'
             - name: Build the library for Windows PowerShell
-              run: dotnet publish ./Sources/AsBuiltReportChart48.csproj -c Release -r win-x64 -p:PlatformTarget=x64
+              run: dotnet publish ./Sources/AsBuiltReportChart48.csproj -c Release -r win-x64
               if: matrix.os == 'windows-latest' && matrix.shell == 'powershell'
             - name: Copy the library for Windows PowerShell
               run: Copy-Item -Path ./Sources/bin/Release/net48/win-x64/publish/* -Destination ./AsBuiltReport.Chart/Src/Assemblies/Desktop/windows-x64 -Recurse

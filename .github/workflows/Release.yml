@@ -43,7 +43,7 @@ jobs:
             - name: Restore dependencies Net 48 Framework
               run: dotnet restore ./Sources/AsBuiltReportChart48.csproj
             - name: Build the library for Windows PowerShell
-              run: dotnet publish ./Sources/AsBuiltReportChart48.csproj -c Release -r win-x64 -p:PlatformTarget=x64
+              run: dotnet publish ./Sources/AsBuiltReportChart48.csproj -c Release -r win-x64
             - name: Copy the library for Windows PowerShell
               run: copy ./Sources/bin/Release/net48/win-x64/publish/*.*
                   ./AsBuiltReport.Chart/Src/Assemblies/Desktop/windows-x64
