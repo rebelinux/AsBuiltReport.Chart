@@ -46,7 +46,7 @@ Describe 'AsBuiltReport.Chart Exported Functions' {
             { New-PieChart } | Should -Throw
         }
         It 'Should throw error for mismatched Values and Labels' {
-            { New-PieChart -Title 'Test' -Values @(1, 2) -Labels @('A') -Format 'png' -OutputFolderPath $TestDrive } | Should -Throw -ExpectedMessage  "Error: Values and labels must be equal."
+            { New-PieChart -Title 'Test' -Values @(1, 2) -Labels @('A') -Format 'png' -OutputFolderPath $TestDrive } | Should -Throw -ExpectedMessage  "Values and labels must contain the same number of items."
         }
         It 'Should throw when OutputFolderPath does not exist' {
             $missingPath = Join-Path -Path $TestDrive -ChildPath 'missing-folder'
@@ -67,7 +67,7 @@ Describe 'AsBuiltReport.Chart Exported Functions' {
             { New-DonutChart } | Should -Throw
         }
         It 'Should throw error for mismatched Values and Labels' {
-            { New-DonutChart -Title 'Test' -Values @(1, 2) -Labels @('A') -Format 'png' -OutputFolderPath $TestDrive } | Should -Throw -ExpectedMessage  "Error: Values and labels must be equal."
+            { New-DonutChart -Title 'Test' -Values @(1, 2) -Labels @('A') -Format 'png' -OutputFolderPath $TestDrive } | Should -Throw -ExpectedMessage  "Values and labels must contain the same number of items."
         }
     }
 
@@ -84,7 +84,7 @@ Describe 'AsBuiltReport.Chart Exported Functions' {
             { New-BarChart } | Should -Throw
         }
         It 'Should throw error for mismatched Values and Labels' {
-            { New-BarChart -Title 'Test' -Values @(1, 2) -Labels @('A') -Format 'png' -OutputFolderPath $TestDrive } | Should -Throw -ExpectedMessage  "Error: Values and labels must be equal."
+            { New-BarChart -Title 'Test' -Values @(1, 2) -Labels @('A') -Format 'png' -OutputFolderPath $TestDrive } | Should -Throw -ExpectedMessage  "Values and labels must contain the same number of items."
         }
     }
 
@@ -286,10 +286,10 @@ Describe 'AsBuiltReport.Chart Exported Functions' {
             { New-RadarChart -Title 'Test' -Values @(@(1, 2, 5, 8)) -Format 'png' -OutputFolderPath $TestDrive } | Should -Throw
         }
         It 'Should throw error for mismatched Values and LegendLabels' {
-            { New-RadarChart -Title 'Test' -Values @(@(1, 2, 5, 8), @(3, 5, 4, 2)) -LegendLabels @('A') -Format 'png' -OutputFolderPath $TestDrive } | Should -Throw -ExpectedMessage "Error: Values and labels must be equal."
+            { New-RadarChart -Title 'Test' -Values @(@(1, 2, 5, 8), @(3, 5, 4, 2)) -LegendLabels @('A') -Format 'png' -OutputFolderPath $TestDrive } | Should -Throw -ExpectedMessage "Values and labels must contain the same number of items."
         }
         It 'Should throw error for mismatched Values elements and SpokeLabels' {
-            { New-RadarChart -Title 'Test' -Values @(@(1, 2, 5), @(3, 5, 4, 2)) -LegendLabels @('A', 'B') -SpokeLabels @('Wins', 'Poles', 'Podiums', 'Points') -Format 'png' -OutputFolderPath $TestDrive } | Should -Throw -ExpectedMessage "Every collection in the series must have the same number of items"
+            { New-RadarChart -Title 'Test' -Values @(@(1, 2, 5), @(3, 5, 4, 2)) -LegendLabels @('A', 'B') -SpokeLabels @('Wins', 'Poles', 'Podiums', 'Points') -Format 'png' -OutputFolderPath $TestDrive } | Should -Throw -ExpectedMessage "Every radar series must contain the same number of values. (Parameter 'values')"
         }
         It 'Should run without error with legend enabled' {
             { New-RadarChart -Title 'Test' -Values @(@(1, 2, 5, 8), @(3, 5, 4, 2)) -LegendLabels @('A', 'B') -SpokeLabels @('Wins', 'Poles', 'Podiums', 'Points') -Format 'png' -OutputFolderPath $TestDrive -EnableLegend } | Should -Not -Throw
