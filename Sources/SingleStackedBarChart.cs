@@ -10,6 +10,15 @@ namespace AsBuiltReportChart
         static SingleStackedBar() { }
         public object Chart(double[] values, string label, string[] categoryNames, string filename = "output", int width = 400, int height = 300)
         {
+            ValidateFiniteValues(values);
+            if (categoryNames == null || categoryNames.Length == 0)
+            {
+                throw new ArgumentException("Category names cannot be null or empty.", nameof(categoryNames));
+            }
+            if (string.IsNullOrWhiteSpace(label))
+            {
+                throw new ArgumentException("Label cannot be null or empty.", nameof(label));
+            }
             Plot myPlot = new Plot();
 
             if (EnableCustomColorPalette)

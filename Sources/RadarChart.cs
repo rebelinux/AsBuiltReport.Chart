@@ -9,6 +9,7 @@ namespace AsBuiltReportChart
         public Radar() { }
         public object Chart(List<double[]> values, string[] labels, string filename = "output", int width = 400, int height = 300)
         {
+            ValidateRadarValues(values, labels);
             if (values.Count == labels.Length)
             {
                 Plot myPlot = new Plot();
@@ -118,6 +119,7 @@ namespace AsBuiltReportChart
         }
         public object Chart(List<double[]> values, string[] labels, string[] categoryNames, string filename = "output", int width = 400, int height = 300)
         {
+            ValidateRadarValues(values, labels);
             if (values.Count == labels.Length)
             {
                 Plot myPlot = new Plot();

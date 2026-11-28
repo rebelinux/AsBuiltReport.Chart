@@ -23,6 +23,13 @@ namespace AsBuiltReportChart
                 {
                     throw new ArgumentException("Error: All rows in Values must have the same length.");
                 }
+                foreach (double value in values[rowIndex])
+                {
+                    if (double.IsNaN(value) || double.IsInfinity(value))
+                    {
+                        throw new ArgumentException("Error: Values cannot contain NaN or infinity.");
+                    }
+                }
             }
 
             if (rowLabels != null && rowLabels.Length != rows)

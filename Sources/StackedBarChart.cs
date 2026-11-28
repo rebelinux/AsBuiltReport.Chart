@@ -10,6 +10,36 @@ namespace AsBuiltReportChart
         static StackedBar() { }
         public object Chart(List<double[]> values, string[] labels, string[] categoryNames, string filename = "output", int width = 400, int height = 300)
         {
+            if (values == null)
+            {
+                throw new ArgumentNullException(nameof(values), "Values cannot be null.");
+            }
+            if (values.Count == 0)
+            {
+                throw new ArgumentException("Values cannot be empty.", nameof(values));
+            }
+            if (labels == null || labels.Length == 0)
+            {
+                throw new ArgumentException("Labels cannot be null or empty.", nameof(labels));
+            }
+            if (categoryNames == null || categoryNames.Length == 0)
+            {
+                throw new ArgumentException("Category names cannot be null or empty.", nameof(categoryNames));
+            }
+            foreach (double[] valueSet in values)
+            {
+                if (valueSet == null)
+                {
+                    throw new ArgumentException("Value sets cannot contain null arrays.", nameof(values));
+                }
+                foreach (double value in valueSet)
+                {
+                    if (double.IsNaN(value) || double.IsInfinity(value))
+                    {
+                        throw new ArgumentException("Values cannot contain NaN or infinity.", nameof(values));
+                    }
+                }
+            }
             Plot myPlot = new Plot();
 
             if (EnableCustomColorPalette)

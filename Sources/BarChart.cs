@@ -10,6 +10,7 @@ namespace AsBuiltReportChart
         static Bar() { }
         public object Chart(double[] values, string[] labels, string filename = "output", int width = 400, int height = 300)
         {
+            ValidateValuesAndLabels(values, labels);
             if (values.Length == labels.Length)
             {
                 Plot myPlot = new Plot();

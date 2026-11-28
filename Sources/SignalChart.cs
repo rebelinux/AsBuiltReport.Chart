@@ -14,6 +14,29 @@ namespace AsBuiltReportChart
             {
                 throw new ArgumentException("Error: Values cannot be null or empty.");
             }
+            if (double.IsNaN(period) || double.IsInfinity(period) || period <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(period), "Period must be a finite value greater than zero.");
+            }
+            if (double.IsNaN(xOffset) || double.IsInfinity(xOffset))
+            {
+                throw new ArgumentOutOfRangeException(nameof(xOffset), "X offset must be a finite value.");
+            }
+
+            foreach (double[] valueSet in values)
+            {
+                if (valueSet == null || valueSet.Length == 0)
+                {
+                    throw new ArgumentException("Value sets cannot be null or empty.", nameof(values));
+                }
+                foreach (double value in valueSet)
+                {
+                    if (double.IsNaN(value) || double.IsInfinity(value))
+                    {
+                        throw new ArgumentException("Values cannot contain NaN or infinity.", nameof(values));
+                    }
+                }
+            }
 
             if (xValues != null)
             {
@@ -24,6 +47,10 @@ namespace AsBuiltReportChart
 
                 for (int i = 0; i < xValues.Count; i++)
                 {
+                    if (xValues[i] == null || xValues[i].Length == 0)
+                    {
+                        throw new ArgumentException($"XValues at index {i} cannot be null or empty.");
+                    }
                     if (xValues[i].Length != values[i].Length)
                     {
                         throw new ArgumentException($"Error: XValues and Values at index {i} must have the same number of elements.");

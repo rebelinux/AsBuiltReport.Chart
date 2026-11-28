@@ -15,7 +15,7 @@ namespace AsBuiltReportChart
         internal static Formats Format { get; set; } = Formats.png;
 
         // Title setting  (All Charts)
-        public static string Title { get; set; }
+        public static string? Title { get; set; }
         public static bool TitleFontBold { get; set; }
         public static int TitleFontSize { get; set; } = 14;
         public static BasicColors TitleFontColor { get; set; } = BasicColors.Black;
@@ -90,7 +90,7 @@ namespace AsBuiltReportChart
         }
 
         // Center text for Donut Chart
-        public static string DonutCenterText { get; set; }
+        public static string? DonutCenterText { get; set; }
 
         // this set the distance of the chart area elements (Donut Chart)
         internal static double _donutFraction;
@@ -164,7 +164,7 @@ namespace AsBuiltReportChart
             { ColorPalettes.SummerSplash, new ScottPlot.Palettes.SummerSplash() },
             { ColorPalettes.Tsitsulin, new ScottPlot.Palettes.Tsitsulin() },
     };
-        internal static IPalette colorPalette;
+        internal static IPalette? colorPalette;
         public static ColorPalettes? ColorPalette
         {
             get => ColorPaletteMap.FirstOrDefault(x => x.Value == colorPalette).Key;
@@ -179,7 +179,7 @@ namespace AsBuiltReportChart
 
         // Custom color palette (All Charts)
         public static bool InvertCustomColorPalette;
-        internal static string[] _customColorPalette;
+        internal static string[]? _customColorPalette;
         public static string[] CustomColorPalette
         {
             get => _customColorPalette ?? Array.Empty<string>();
@@ -199,20 +199,22 @@ namespace AsBuiltReportChart
                 {
                     throw new ArgumentException("Error: CustomColorPalette cannot be null or empty when setting custom colors.");
                 }
+
+                string[] palette = (string[])value.Clone();
                 if (InvertCustomColorPalette)
                 {
-                    Array.Reverse(value);
-                    _customColorPalette = value;
+                    Array.Reverse(palette);
+                    _customColorPalette = palette;
                 }
                 else
                 {
-                    _customColorPalette = value;
+                    _customColorPalette = palette;
                 }
             }
         }
         public static bool EnableCustomColorPalette { get; set; }
 
-        internal static string _outputFolderPath;
+        internal static string? _outputFolderPath;
 
         public static string OutputFolderPath
         {
@@ -496,65 +498,132 @@ namespace AsBuiltReportChart
             }
             return Convert.ToBase64String(bytes).Replace("=", "").Replace("+", "").Replace("/", "");
         }
+
+        internal static void ValidateChartDimensions(int width, int height)
+        {
+            if (width <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(width), "Chart width must be greater than zero.");
+            }
+            if (height <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(height), "Chart height must be greater than zero.");
+            }
+        }
+
+        internal static void ValidateFiniteValues(double[] values)
+        {
+            if (values == null)
+            {
+                throw new ArgumentNullException(nameof(values), "Values cannot be null.");
+            }
+            if (values.Length == 0)
+            {
+                throw new ArgumentException("Values cannot be empty.", nameof(values));
+            }
+            foreach (double value in values)
+            {
+                if (double.IsNaN(value) || double.IsInfinity(value))
+                {
+                    throw new ArgumentException("Values cannot contain NaN or infinity.", nameof(values));
+                }
+            }
+        }
+
+        internal static void ValidateValuesAndLabels(double[] values, string[] labels)
+        {
+            ValidateFiniteValues(values);
+            if (labels == null)
+            {
+                throw new ArgumentNullException(nameof(labels), "Labels cannot be null.");
+            }
+            if (labels.Length == 0)
+            {
+                throw new ArgumentException("Labels cannot be empty.", nameof(labels));
+            }
+            if (values.Length != labels.Length)
+            {
+                throw new ArgumentException("Values and labels must contain the same number of items.");
+            }
+        }
+
+        internal static void ValidateRadarValues(List<double[]> values, string[] labels)
+        {
+            if (values == null)
+            {
+                throw new ArgumentNullException(nameof(values), "Values cannot be null.");
+            }
+            if (values.Count == 0)
+            {
+                throw new ArgumentException("Values cannot be empty.", nameof(values));
+            }
+            if (labels == null)
+            {
+                throw new ArgumentNullException(nameof(labels), "Labels cannot be null.");
+            }
+            if (values.Count != labels.Length)
+            {
+                throw new ArgumentException("Values and labels must contain the same number of items.");
+            }
+
+            int spokeCount = values[0]?.Length ?? 0;
+            if (spokeCount == 0)
+            {
+                throw new ArgumentException("Each radar series must contain at least one value.", nameof(values));
+            }
+            foreach (double[] series in values)
+            {
+                if (series == null || series.Length != spokeCount)
+                {
+                    throw new ArgumentException("Every radar series must contain the same number of values.", nameof(values));
+                }
+                foreach (double value in series)
+                {
+                    if (double.IsNaN(value) || double.IsInfinity(value))
+                    {
+                        throw new ArgumentException("Values cannot contain NaN or infinity.", nameof(values));
+                    }
+                }
+            }
+        }
+
         public static object SaveInFormat(Plot plot, int width, int height, string filepath, string filename, Formats Format)
         {
+            if (plot == null)
+            {
+                throw new ArgumentNullException(nameof(plot));
+            }
+            ValidateChartDimensions(width, height);
+            if (string.IsNullOrWhiteSpace(filepath))
+            {
+                throw new ArgumentException("Output folder path cannot be null or empty.", nameof(filepath));
+            }
+            if (!Directory.Exists(filepath))
+            {
+                throw new ArgumentException("Output folder path does not exist.", nameof(filepath));
+            }
+            if (string.IsNullOrWhiteSpace(filename))
+            {
+                throw new ArgumentException("Filename cannot be null or empty.", nameof(filename));
+            }
+            if (filename.IndexOfAny(new[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar }) >= 0 ||
+                Path.GetFileName(filename) != filename)
+            {
+                throw new ArgumentException("Filename must not contain directory components.", nameof(filename));
+            }
+
             switch (Format)
             {
                 case Formats.png:
-                    plot.SavePng(Path.Combine(filepath, $"{filename}.png"), width, height);
-                    if (File.Exists(Path.Combine(filepath, $"{filename}.png")))
-                    {
-                        FileInfo fileInfo = new FileInfo(Path.Combine(filepath, $"{filename}.png"));
-                        return fileInfo;
-                    }
-                    else
-                    {
-                        throw new ArgumentException("Error: Unable to Export Chart Exception");
-                    }
+                    return SaveAndReturn(() => plot.SavePng(Path.Combine(filepath, $"{filename}.png"), width, height), Path.Combine(filepath, $"{filename}.png"));
                 case Formats.jpg:
-                    plot.SaveJpeg(Path.Combine(filepath, $"{filename}.jpg"), width, height);
-                    if (File.Exists(Path.Combine(filepath, $"{filename}.jpg")))
-                    {
-                        FileInfo fileInfo = new FileInfo(Path.Combine(filepath, $"{filename}.jpg"));
-                        return fileInfo;
-                    }
-                    else
-                    {
-                        throw new ArgumentException("Error: Unable to Export Chart Exception");
-                    }
+                    return SaveAndReturn(() => plot.SaveJpeg(Path.Combine(filepath, $"{filename}.jpg"), width, height), Path.Combine(filepath, $"{filename}.jpg"));
                 case Formats.jpeg:
-                    plot.SaveJpeg(Path.Combine(filepath, $"{filename}.jpeg"), width, height);
-                    if (File.Exists(Path.Combine(filepath, $"{filename}.jpeg")))
-                    {
-                        FileInfo fileInfo = new FileInfo(Path.Combine(filepath, $"{filename}.jpeg"));
-                        return fileInfo;
-                    }
-                    else
-                    {
-                        throw new ArgumentException("Error: Unable to Export Chart Exception");
-                    }
+                    return SaveAndReturn(() => plot.SaveJpeg(Path.Combine(filepath, $"{filename}.jpeg"), width, height), Path.Combine(filepath, $"{filename}.jpeg"));
                 case Formats.bmp:
-                    plot.SaveBmp(Path.Combine(filepath, $"{filename}.bmp"), width, height);
-                    if (File.Exists(Path.Combine(filepath, $"{filename}.bmp")))
-                    {
-                        FileInfo fileInfo = new FileInfo(Path.Combine(filepath, $"{filename}.bmp"));
-                        return fileInfo;
-                    }
-                    else
-                    {
-                        throw new ArgumentException("Error: Unable to Export Chart Exception");
-                    }
+                    return SaveAndReturn(() => plot.SaveBmp(Path.Combine(filepath, $"{filename}.bmp"), width, height), Path.Combine(filepath, $"{filename}.bmp"));
                 case Formats.svg:
-                    plot.SaveSvg(Path.Combine(filepath, $"{filename}.svg"), width, height);
-                    if (File.Exists(Path.Combine(filepath, $"{filename}.svg")))
-                    {
-                        FileInfo fileInfo = new FileInfo(Path.Combine(filepath, $"{filename}.svg"));
-                        return fileInfo;
-                    }
-                    else
-                    {
-                        throw new ArgumentException("Error: Unable to Export Chart Exception");
-                    }
+                    return SaveAndReturn(() => plot.SaveSvg(Path.Combine(filepath, $"{filename}.svg"), width, height), Path.Combine(filepath, $"{filename}.svg"));
                 case Formats.base64:
                     byte[] imgBytes = plot.GetImageBytes(width, height, ImageFormat.Png);
                     if (imgBytes != null)
@@ -568,6 +637,16 @@ namespace AsBuiltReportChart
                 default:
                     throw new ArgumentException($"Error: Unsupported format '{Format}'.");
             }
+        }
+
+        private static FileInfo SaveAndReturn(Action save, string path)
+        {
+            save();
+            if (!File.Exists(path))
+            {
+                throw new IOException($"Unable to export chart to '{path}'.");
+            }
+            return new FileInfo(path);
         }
     }
 }
